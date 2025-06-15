@@ -1,0 +1,25 @@
+{
+    "name": "ColorMap.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:2697366c92a0c3d4e91df16bd8adabd2",
+        "GUID:15fc0a57446b3144c949da3e2b9737a9"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "www.nulltale.volfx",
+            "expression": "1",
+            "define": "VOL_FX"
+        }
+    ],
+    "noEngineReferences": false
+}

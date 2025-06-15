@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c912c100633d91b4fb0e4146900c1178
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 270020
+  packageName: Color Map - Palette Colorization Effect
+  packageVersion: 1.5.0
+  assetPath: Assets/ColorMap/Samples/ColorMap/ColorMap_Offset.asset
+  uploadId: 760853

@@ -1,0 +1,16 @@
+{
+  "name": "www.nulltale.colormap",
+  "displayName": "ColorMap",
+  "version": "1.5.0",
+  "unity": "2022.1",
+  "description": "Flexible Colorization effect for Unity Urp",
+  "author": {
+    "name": "NullTale",
+    "email": "nulltale@gmail.com",
+    "url": "https://x.com/nulltale"
+  },
+  "dependencies": {
+    "com.unity.render-pipelines.universal": "14.0.6"
+  },
+  "hideInEditor": false
+}

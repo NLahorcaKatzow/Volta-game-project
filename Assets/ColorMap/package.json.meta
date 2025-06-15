@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 04e91415506f24943b3a3f2e9569224c
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 270020
+  packageName: Color Map - Palette Colorization Effect
+  packageVersion: 1.5.0
+  assetPath: Assets/ColorMap/package.json
+  uploadId: 760853

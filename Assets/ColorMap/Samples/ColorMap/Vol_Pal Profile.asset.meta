@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 99a34d29cac86d940ab5ff4ecf917dac
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 270020
+  packageName: Color Map - Palette Colorization Effect
+  packageVersion: 1.5.0
+  assetPath: Assets/ColorMap/Samples/ColorMap/Vol_Pal Profile.asset
+  uploadId: 760853

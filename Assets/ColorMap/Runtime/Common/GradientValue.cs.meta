@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 65ffb3334aa7452d849681768ac0b92a
+timeCreated: 1699541999
+AssetOrigin:
+  serializedVersion: 1
+  productId: 270020
+  packageName: Color Map - Palette Colorization Effect
+  packageVersion: 1.5.0
+  assetPath: Assets/ColorMap/Runtime/Common/GradientValue.cs
+  uploadId: 760853

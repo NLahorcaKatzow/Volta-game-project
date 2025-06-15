@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 3d890e809a9f18a4ca73a59eaaebb9a6
+timeCreated: 1697618098
+AssetOrigin:
+  serializedVersion: 1
+  productId: 270020
+  packageName: Color Map - Palette Colorization Effect
+  packageVersion: 1.5.0
+  assetPath: Assets/ColorMap/Runtime/Common/RenderTarget.cs
+  uploadId: 760853
