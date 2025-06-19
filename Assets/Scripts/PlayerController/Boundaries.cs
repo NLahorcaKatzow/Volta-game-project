@@ -36,7 +36,6 @@ public class Boundaries : MonoBehaviour
             return false;
         }
         
-        // Additional raycast check for extra safety
         Vector3 rayOrigin = transform.position;
         Vector3 rayDirection = direction;
         float rayDistance = gridSize;

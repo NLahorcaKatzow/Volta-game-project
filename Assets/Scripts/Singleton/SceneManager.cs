@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
-using System.Collections;
 using UnityEngine.UI;
 
 public class SceneManager : MonoBehaviour
@@ -31,7 +30,6 @@ public class SceneManager : MonoBehaviour
     
     void Awake()
     {
-        // Implement singleton pattern
         if (Instance == null)
         {
             Instance = this;
@@ -48,20 +46,16 @@ public class SceneManager : MonoBehaviour
             return;
         }
         
-        // Initialize level index based on current scene
         InitializeCurrentLevel();
     }
     
     void Start()
     {
-        // Setup fade panel if not assigned
         if (fadePanel == null)
         {
             SetupFadePanel();
         }
         
-        
-        // Setup restart button event
         if (restartButton != null)
         {
             restartButton.onClick.AddListener(OnRestartButtonClicked);
@@ -89,10 +83,8 @@ public class SceneManager : MonoBehaviour
     
     private void SetupFadePanel()
     {
-        
         if (fadePanel == null)
         {
-            // Create a simple fade panel if none exists
             GameObject fadeObject = new GameObject("FadePanel");
             Canvas canvas = fadeObject.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -102,7 +94,6 @@ public class SceneManager : MonoBehaviour
             fadePanel.alpha = 0f;
             fadePanel.blocksRaycasts = false;
             
-            // Add a black background
             UnityEngine.UI.Image image = fadeObject.AddComponent<UnityEngine.UI.Image>();
             image.color = Color.black;
             
@@ -113,31 +104,32 @@ public class SceneManager : MonoBehaviour
         }
     }
     
-    
-    
     private void OnRestartButtonClicked()
     {
         if (debugMode)
             Debug.Log("Restart button clicked - restarting current level");
         
-        StartCoroutine(HideDeathUIAndRestart());
+        HideDeathUIAndRestart();
     }
     
-    private IEnumerator HideDeathUIAndRestart()
+    private void HideDeathUIAndRestart()
     {
         if (deathCanvasGroup != null)
         {
-            // Fade out death UI
-            yield return deathCanvasGroup.DOFade(0f, deathUIFadeDuration).WaitForCompletion();
-            deathCanvasGroup.blocksRaycasts = false;
-            deathCanvasGroup.interactable = false;
-            deathUI.SetActive(false);
+            deathCanvasGroup.DOFade(0f, deathUIFadeDuration)
+                .OnComplete(() => {
+                    deathCanvasGroup.blocksRaycasts = false;
+                    deathCanvasGroup.interactable = false;
+                    deathUI.SetActive(false);
+                    isDeathUIActive = false;
+                    RestartCurrentLevel();
+                });
         }
-        
-        isDeathUIActive = false;
-        
-        // Restart the current level
-        RestartCurrentLevel();
+        else
+        {
+            isDeathUIActive = false;
+            RestartCurrentLevel();
+        }
     }
     
     public void ShowDeathUI()
@@ -149,10 +141,10 @@ public class SceneManager : MonoBehaviour
             return;
         }
         
-        StartCoroutine(ShowDeathUICoroutine());
+        ShowDeathUIAnimation();
     }
     
-    private IEnumerator ShowDeathUICoroutine()
+    private void ShowDeathUIAnimation()
     {
         isDeathUIActive = true;
         
@@ -165,11 +157,11 @@ public class SceneManager : MonoBehaviour
             deathCanvasGroup.blocksRaycasts = true;
             deathCanvasGroup.interactable = true;
             
-            // Fade in death UI
-            yield return deathCanvasGroup.DOFade(1f, deathUIFadeDuration).WaitForCompletion();
-            
-            if (debugMode)
-                Debug.Log("Death UI fully visible");
+            deathCanvasGroup.DOFade(1f, deathUIFadeDuration)
+                .OnComplete(() => {
+                    if (debugMode)
+                        Debug.Log("Death UI fully visible");
+                });
         }
     }
     
@@ -182,27 +174,31 @@ public class SceneManager : MonoBehaviour
             return;
         }
         
-        StartCoroutine(HideDeathUICoroutine());
+        HideDeathUIAnimation();
     }
     
-    private IEnumerator HideDeathUICoroutine()
+    private void HideDeathUIAnimation()
     {
         if (debugMode)
             Debug.Log("Hiding death UI");
         
         if (deathCanvasGroup != null)
         {
-            // Fade out death UI
-            yield return deathCanvasGroup.DOFade(0f, deathUIFadeDuration).WaitForCompletion();
-            deathCanvasGroup.blocksRaycasts = false;
-            deathCanvasGroup.interactable = false;
-            deathUI.SetActive(false);
+            deathCanvasGroup.DOFade(0f, deathUIFadeDuration)
+                .OnComplete(() => {
+                    deathCanvasGroup.blocksRaycasts = false;
+                    deathCanvasGroup.interactable = false;
+                    deathUI.SetActive(false);
+                    isDeathUIActive = false;
+                    
+                    if (debugMode)
+                        Debug.Log("Death UI hidden");
+                });
         }
-        
-        isDeathUIActive = false;
-        
-        if (debugMode)
-            Debug.Log("Death UI hidden");
+        else
+        {
+            isDeathUIActive = false;
+        }
     }
     
     public void LoadNextLevel()
@@ -218,13 +214,13 @@ public class SceneManager : MonoBehaviour
         
         if (nextLevelIndex < levelScenes.Length)
         {
-            StartCoroutine(TransitionToLevel(nextLevelIndex));
+            TransitionToLevel(nextLevelIndex);
         }
         else
         {
             if (debugMode)
                 Debug.Log("No more levels available, going to main menu");
-            StartCoroutine(TransitionToMainMenu());
+            TransitionToMainMenu();
         }
     }
     
@@ -239,7 +235,7 @@ public class SceneManager : MonoBehaviour
         
         if (levelIndex >= 0 && levelIndex < levelScenes.Length)
         {
-            StartCoroutine(TransitionToLevel(levelIndex));
+            TransitionToLevel(levelIndex);
         }
         else
         {
@@ -256,13 +252,12 @@ public class SceneManager : MonoBehaviour
             return;
         }
         
-        // Hide death UI if it's active
         if (isDeathUIActive)
         {
             HideDeathUI();
         }
         
-        StartCoroutine(TransitionToLevel(currentLevelIndex));
+        TransitionToLevel(currentLevelIndex);
     }
     
     public void LoadMainMenu()
@@ -274,133 +269,115 @@ public class SceneManager : MonoBehaviour
             return;
         }
         
-        StartCoroutine(TransitionToMainMenu());
+        TransitionToMainMenu();
     }
     
-    private IEnumerator TransitionToLevel(int levelIndex)
+    private void TransitionToLevel(int levelIndex)
     {
         isTransitioning = true;
         
         if (debugMode)
             Debug.Log($"Transitioning to level {levelIndex}: {levelScenes[levelIndex]}");
         
-        // Wait for transition delay
-        yield return new WaitForSeconds(transitionDelay);
+        // Create DOTween sequence for transition
+        Sequence transitionSequence = DOTween.Sequence();
         
-        // Fade out
-        yield return FadeOut();
+        // Add transition delay
+        transitionSequence.AppendInterval(transitionDelay);
         
-        // Load the scene
-        currentLevelIndex = levelIndex;
-        UnityEngine.SceneManagement.SceneManager.LoadScene(levelScenes[levelIndex]);
-        
-        // Wait a frame for scene to load
-        yield return null;
-        
-        // Fade in
-        yield return FadeIn();
-        
-        isTransitioning = false;
-        
-        if (debugMode)
-            Debug.Log($"Successfully loaded level: {levelScenes[levelIndex]}");
+        // Add fade out
+        transitionSequence.AppendCallback(() => FadeOut(() => {
+            // Load the scene after fade out completes
+            currentLevelIndex = levelIndex;
+            UnityEngine.SceneManagement.SceneManager.LoadScene(levelScenes[levelIndex]);
+            
+            // Fade in after scene loads (small delay for scene initialization)
+            DOVirtual.DelayedCall(0.1f, () => {
+                FadeIn(() => {
+                    isTransitioning = false;
+                    
+                    if (debugMode)
+                        Debug.Log($"Successfully loaded level: {levelScenes[levelIndex]}");
+                });
+            });
+        }));
     }
     
-    private IEnumerator TransitionToMainMenu()
+    private void TransitionToMainMenu()
     {
         isTransitioning = true;
         
         if (debugMode)
             Debug.Log("Transitioning to main menu");
         
-        // Wait for transition delay
-        yield return new WaitForSeconds(transitionDelay);
+        // Create DOTween sequence for transition
+        Sequence transitionSequence = DOTween.Sequence();
         
-        // Fade out
-        yield return FadeOut();
+        // Add transition delay
+        transitionSequence.AppendInterval(transitionDelay);
         
-        // Load main menu
-        currentLevelIndex = 0; // Reset to first level
-        UnityEngine.SceneManagement.SceneManager.LoadScene(mainMenuScene);
-        
-        // Wait a frame for scene to load
-        yield return null;
-        
-        // Fade in
-        yield return FadeIn();
-        
-        isTransitioning = false;
-        
-        if (debugMode)
-            Debug.Log("Successfully loaded main menu");
+        // Add fade out
+        transitionSequence.AppendCallback(() => FadeOut(() => {
+            // Load main menu after fade out completes
+            currentLevelIndex = 0;
+            UnityEngine.SceneManagement.SceneManager.LoadScene(mainMenuScene);
+            
+            // Fade in after scene loads (small delay for scene initialization)
+            DOVirtual.DelayedCall(0.1f, () => {
+                FadeIn(() => {
+                    isTransitioning = false;
+                    
+                    if (debugMode)
+                        Debug.Log("Successfully loaded main menu");
+                });
+            });
+        }));
     }
     
-    private IEnumerator FadeOut()
+    private void FadeOut(System.Action onComplete = null)
     {
         if (fadePanel != null)
         {
             fadePanel.blocksRaycasts = true;
             fadePanel.interactable = false;
             
-            // Use DOTween for smooth fade out
-            Tween fadeTween = fadePanel.DOFade(1f, fadeDuration).SetEase(fadeEaseOut);
-            yield return fadeTween.WaitForCompletion();
-            
-            if (debugMode)
-                Debug.Log("Fade out completed");
+            fadePanel.DOFade(1f, fadeDuration)
+                .SetEase(fadeEaseOut)
+                .OnComplete(() => {
+                    if (debugMode)
+                        Debug.Log("Fade out completed");
+                    
+                    onComplete?.Invoke();
+                });
+        }
+        else
+        {
+            onComplete?.Invoke();
         }
     }
     
-    private IEnumerator FadeIn()
+    private void FadeIn(System.Action onComplete = null)
     {
         if (fadePanel != null)
         {
-            // Use DOTween for smooth fade in
-            Tween fadeTween = fadePanel.DOFade(0f, fadeDuration).SetEase(fadeEaseIn);
-            yield return fadeTween.WaitForCompletion();
-            
-            fadePanel.blocksRaycasts = false;
-            fadePanel.interactable = true;
-            
-            if (debugMode)
-                Debug.Log("Fade in completed");
+            fadePanel.DOFade(0f, fadeDuration)
+                .SetEase(fadeEaseIn)
+                .OnComplete(() => {
+                    fadePanel.blocksRaycasts = false;
+                    fadePanel.interactable = true;
+                    
+                    if (debugMode)
+                        Debug.Log("Fade in completed");
+                    
+                    onComplete?.Invoke();
+                });
+        }
+        else
+        {
+            onComplete?.Invoke();
         }
     }
     
-    // Public getters for external access
-    public int GetCurrentLevelIndex()
-    {
-        return currentLevelIndex;
-    }
-    
-    public string GetCurrentLevelName()
-    {
-        if (currentLevelIndex >= 0 && currentLevelIndex < levelScenes.Length)
-            return levelScenes[currentLevelIndex];
-        return "Unknown";
-    }
-    
-    public int GetTotalLevels()
-    {
-        return levelScenes.Length;
-    }
-    
-    public bool HasNextLevel()
-    {
-        return currentLevelIndex + 1 < levelScenes.Length;
-    }
-    
-    public bool IsTransitioning()
-    {
-        return isTransitioning;
-    }
-    
-    public bool IsDeathUIActive()
-    {
-        return isDeathUIActive;
-    }
-    
-    // Method to be called by GoalController
     public void OnLevelCompleted()
     {
         if (debugMode)
@@ -409,7 +386,6 @@ public class SceneManager : MonoBehaviour
         LoadNextLevel();
     }
     
-    // Method to be called when player dies
     public void OnPlayerDeath()
     {
         if (debugMode)

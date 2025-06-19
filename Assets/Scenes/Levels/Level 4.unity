@@ -696,6 +696,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1410843538684178106, guid: 7f7c2ddd5414f7c46957fdb22ac25e94, type: 3}
+      propertyPath: laserDirection
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2276329843951100304, guid: 7f7c2ddd5414f7c46957fdb22ac25e94, type: 3}
       propertyPath: m_Name
       value: Laser

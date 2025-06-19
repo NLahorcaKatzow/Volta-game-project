@@ -18,22 +18,20 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool enableHistory = true;
     public int maxHistorySize = 50;
     public event Action<int> OnChangeMovementHistory;
-    [SerializeField] private float holdTimeThreshold = 0.5f; // Time to hold before fast rewind
-    [SerializeField] private float fastRewindSpeed = 0.15f; // Speed for fast rewind
+    [SerializeField] private float holdTimeThreshold = 0.5f;
+    [SerializeField] private float fastRewindSpeed = 0.15f;
     [SerializeField] private WireController wireController;
     
     [Header("Trace Settings")]
     [SerializeField] private GameObject tracePrefab;
-    [SerializeField] private Transform traceParent;
-    [SerializeField] private bool createDefaultTrace = true;
     
     private Vector3 currentGridPosition;
     [SerializeField] private bool isMoving = false;
     [SerializeField] private bool canMove = true;
     
-    // Movement history system - now using dictionary with trace GameObjects
-    private List<Vector3> movementHistory = new List<Vector3>(); // Keep for order
-    private Dictionary<Vector3, GameObject> traceHistory = new Dictionary<Vector3, GameObject>(); // Position -> Trace GameObject
+    // Movement history system
+    private List<Vector3> movementHistory = new List<Vector3>(); //for movement history
+    private Dictionary<Vector3, GameObject> traceHistory = new Dictionary<Vector3, GameObject>(); //for trace history (physics)
     [SerializeField]private bool isRewinding = false;
     
     // Fast rewind system
@@ -75,11 +73,7 @@ public class PlayerController : MonoBehaviour
             movementHistory.Clear();
             traceHistory.Clear();
             movementHistory.Add(currentGridPosition);
-            // Don't create trace for starting position
-            Debug.Log("Movement history initialized with starting position: " + currentGridPosition);
         }
-        
-        Debug.Log("PlayerController initialized at grid position: " + currentGridPosition);
     }
 
     // Update is called once per frame
@@ -94,15 +88,9 @@ public class PlayerController : MonoBehaviour
     
     private void HandleInput()
     {
-        
-        // Handle right-click rewind system
         HandleRewindInput();
         
-        // Only process movement input if not rewinding
-        if (isRewinding || isFastRewinding)
-            return;
-            
-        if (!canMove) return;
+        if (isRewinding || isFastRewinding || !canMove) return;
             
         Vector3 moveDirection = Vector3.zero;
         
@@ -240,8 +228,8 @@ public class PlayerController : MonoBehaviour
     private void HandleRewindInput()
     {
         if (!enableHistory) {
-        StopFastRewind();
-        return;
+            StopFastRewind();
+            return;
         }
         
         // Track right-click hold state
@@ -538,5 +526,9 @@ public class PlayerController : MonoBehaviour
     public Vector3 GetCurrentFacingDirectionVector()
     {
         return currentFacingDirection.ToVector3();
+    }
+    public bool GetIsMoving()
+    {
+        return isMoving;
     }
 }

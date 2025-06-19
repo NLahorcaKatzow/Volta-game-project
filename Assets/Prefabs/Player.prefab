@@ -849,8 +849,6 @@ MonoBehaviour:
   fastRewindSpeed: 0.15
   wireController: {fileID: 7286829671772951523}
   tracePrefab: {fileID: 9072155954956731718, guid: af8e3b7856728ee49a4cdfa04ebff575, type: 3}
-  traceParent: {fileID: 0}
-  createDefaultTrace: 1
   isMoving: 0
   canMove: 1
   isRewinding: 0

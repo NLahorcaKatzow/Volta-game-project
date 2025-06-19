@@ -137,7 +137,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enable: 1
-  laserDirection: 0
+  laserDirection: 1
+  useLocalDirection: 0
   collisionMask:
     serializedVersion: 2
     m_Bits: 4294967295

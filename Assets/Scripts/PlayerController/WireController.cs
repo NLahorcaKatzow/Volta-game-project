@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
 
 public class WireController : MonoBehaviour
 {
@@ -15,85 +14,59 @@ public class WireController : MonoBehaviour
     
     [Header("Visual Settings")]
     [SerializeField] private bool showTrail = true;
-    [SerializeField] private Vector3 trailOffset = new Vector3(0, 0, 0.1f); // Slight Z offset to avoid z-fighting
+    [SerializeField] private Vector3 trailOffset = new Vector3(0, 0, 0.1f);
     
     private List<Vector3> trailPositions = new List<Vector3>();
-    private bool wasRewinding = false;
-    private bool wasFastRewinding = false;
     
     void Start()
     {
-        // Get PlayerController if not assigned
         if (playerController == null)
             playerController = GetComponent<PlayerController>();
         
-        // Setup LineRenderer
         SetupLineRenderer();
-        
-        // Initialize trail with player's starting position
         InitializeTrail();
-        
-        Debug.Log("WireController initialized successfully");
     }
     
     void Update()
     {
         if (playerController == null || !showTrail) return;
-        
-        // Check if rewind state changed
-        bool isCurrentlyRewinding = playerController.IsMoving() && (playerController.CanRewind() == false);
-        bool isCurrentlyFastRewinding = playerController.IsFastRewinding();
-        
-        // Update trail based on player's movement history
         UpdateTrail();
-        
-        // Track rewind state changes
-        wasRewinding = isCurrentlyRewinding;
-        wasFastRewinding = isCurrentlyFastRewinding;
     }
     
     private void SetupLineRenderer()
     {
         if (trailLine == null)
         {
-            // Create LineRenderer if not assigned
             trailLine = gameObject.AddComponent<LineRenderer>();
         }
         
-        // Configure LineRenderer
         trailLine.material.color = trailColor;
         trailLine.startWidth = trailWidth;
         trailLine.endWidth = trailWidth;
         trailLine.useWorldSpace = true;
-        trailLine.sortingOrder = 1; // Render above other sprites
+        trailLine.sortingOrder = 1;
         
         if (trailMaterial != null)
             trailLine.material = trailMaterial;
-        
-        Debug.Log("LineRenderer configured");
     }
     
     private void InitializeTrail()
     {
         if (playerController == null) return;
         
-        // Get initial position from player controller
         Vector3 startPosition = playerController.GetCurrentGridPosition() * GetGridSize() + trailOffset;
         trailPositions.Clear();
         trailPositions.Add(startPosition);
         
         UpdateLineRenderer();
-        Debug.Log("Trail initialized with starting position: " + startPosition);
     }
     
     private void UpdateTrail()
     {
         if (playerController == null) return;
         
-        // Get current movement history from player controller
         List<Vector3> currentHistory = playerController.GetMovementHistory();
         
-        // Convert grid positions to world positions with offset
         List<Vector3> worldPositions = new List<Vector3>();
         foreach (Vector3 gridPos in currentHistory)
         {
@@ -101,25 +74,10 @@ public class WireController : MonoBehaviour
             worldPositions.Add(worldPos);
         }
         
-        // Update trail positions if history changed
         if (!ArePositionsEqual(trailPositions, worldPositions))
         {
             trailPositions = new List<Vector3>(worldPositions);
             UpdateLineRenderer();
-            
-            // Log trail update
-            if (playerController.IsFastRewinding())
-            {
-                Debug.Log("Fast rewind: Trail updated with " + trailPositions.Count + " positions");
-            }
-            else if (trailPositions.Count < worldPositions.Count)
-            {
-                Debug.Log("Trail extended to " + trailPositions.Count + " positions");
-            }
-            else if (trailPositions.Count > worldPositions.Count)
-            {
-                Debug.Log("Trail rewound to " + trailPositions.Count + " positions");
-            }
         }
     }
     
@@ -148,58 +106,14 @@ public class WireController : MonoBehaviour
     {
         if (playerController != null)
             return playerController.GetGridSize();
-        return 1f; // Default fallback
+        return 1f;
     }
     
-    // Public methods for external control
+    // Only method called externally
     public void SetTrailVisibility(bool visible)
     {
         showTrail = visible;
         if (trailLine != null)
             trailLine.enabled = visible;
-    }
-    
-    public void SetTrailColor(Color color)
-    {
-        trailColor = color;
-        if (trailLine != null)
-            trailLine.material.color = color;
-    }
-    
-    public void SetTrailWidth(float width)
-    {
-        trailWidth = width;
-        if (trailLine != null)
-        {
-            trailLine.startWidth = width;
-            trailLine.endWidth = width;
-        }
-    }
-    
-    public void ClearTrail()
-    {
-        trailPositions.Clear();
-        if (trailLine != null)
-        {
-            trailLine.positionCount = 0;
-        }
-        Debug.Log("Trail cleared");
-    }
-    
-    public void ResetTrail()
-    {
-        InitializeTrail();
-        Debug.Log("Trail reset");
-    }
-    
-    // Debug information
-    public int GetTrailLength()
-    {
-        return trailPositions.Count;
-    }
-    
-    public Vector3[] GetTrailPositions()
-    {
-        return trailPositions.ToArray();
     }
 } 

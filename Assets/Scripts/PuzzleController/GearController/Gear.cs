@@ -155,7 +155,7 @@ public class Gear : MonoBehaviour
         isRotating = true;
         OnRotationStarted?.Invoke();
 
-        // Calculate target direction and angle
+        // Calculate target direction and angulo
         Direction targetDirection = isAtFinalPosition ? originalDirection : finalDirection;
         float targetAngle = GetAngleFromDirection(targetDirection);
         float currentAngle = gearTransform.eulerAngles.z;

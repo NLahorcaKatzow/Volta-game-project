@@ -7,37 +7,9 @@ public class GoalController : MonoBehaviour
     [SerializeField] private Direction requiredDirection = Direction.Up;
     [SerializeField] private bool debugMode = true;
     
-    /*[Header("Visual Feedback")]
-    [SerializeField] private Color correctAlignmentColor = Color.green;
-    [SerializeField] private Color incorrectAlignmentColor = Color.red;
-    [SerializeField] private Color defaultColor = Color.white;
-    [SerializeField] private SpriteRenderer goalRenderer;
-    
-    [Header("Audio")]
-    [SerializeField] private AudioSource audioSource;
-    [SerializeField] private AudioClip goalCompleteSound;
-    [SerializeField] private AudioClip alignmentSound;*/
-    
     private bool goalCompleted = false;
     private PlayerController playerController;
-    //private Color originalColor;
-    
-    void Start()
-    {
-        /*// Setup goal renderer
-        if (goalRenderer == null)
-            goalRenderer = GetComponent<SpriteRenderer>();
-        
-        if (goalRenderer != null)
-            originalColor = goalRenderer.color;
-        
-        // Setup audio
-        if (audioSource == null)
-            audioSource = GetComponent<AudioSource>();*/
-        
-        Debug.Log($"Goal initialized - Required direction: {requiredDirection}");
-    }
-    
+
     void OnTriggerEnter2D(Collider2D other)
     {
         if (goalCompleted) return;
@@ -115,6 +87,11 @@ public class GoalController : MonoBehaviour
     
     private bool IsDirectionAligned(Direction playerCurrentDirection, Direction playerPreviousDirection, Direction goalRequiredDirection)
     {
+        if(playerController.GetIsMoving()) {
+        Debug.Log("Player is moving, not checking alignment");
+        return false;
+        }
+        
         // Get the direction player should be moving to enter the goal (opposite to goal's pointing direction)
         Direction requiredPlayerDirection = GetOppositeDirection(goalRequiredDirection);
         
@@ -183,64 +160,16 @@ public class GoalController : MonoBehaviour
         goalCompleted = true;
         
         Debug.Log("GOAL COMPLETED! Player successfully aligned and entered the goal!");
-        
-        /*// Play completion sound
-        if (audioSource != null && goalCompleteSound != null)
-        {
-            audioSource.PlayOneShot(goalCompleteSound);
-        }
-        
-        // Visual feedback
-        SetVisualFeedback(correctAlignmentColor);*/
-        
-        // Here you can add additional goal completion logic:
-        // - Load next level
-        // - Show victory UI
-        // - Unlock achievements
-        // - etc.
-        
+
         OnGoalCompleted();
     }
-    
-    /*private void PlayAlignmentFeedback()
+
+    private void OnGoalCompleted()
     {
-        if (audioSource != null && alignmentSound != null)
-        {
-            // Play alignment sound with reduced volume to avoid spam
-            if (!audioSource.isPlaying)
-            {
-                audioSource.volume = 0.3f;
-                audioSource.PlayOneShot(alignmentSound);
-            }
-        }
-    }
-    
-    private void SetVisualFeedback(Color color)
-    {
-        if (goalRenderer != null)
-        {
-            goalRenderer.color = color;
-        }
-    }
-    
-    private void ResetVisualFeedback()
-    {
-        if (goalRenderer != null)
-        {
-            goalRenderer.color = originalColor;
-        }
-    }*/
-    
-    // Public method that can be overridden or extended
-    protected virtual void OnGoalCompleted()
-    {
-        // Override this method in derived classes for custom goal completion behavior
         playerController.enabled = false;
         playerController.GetWireController().SetTrailVisibility(false);
         playerController.transform.DOMove(transform.position, 1f).SetEase(Ease.OutQuint).OnComplete(() => 
         {
-            //TODO: sonido de switch
-            
             // Trigger scene transition through SceneManager singleton
             SceneManager.Instance.OnLevelCompleted();
         });
